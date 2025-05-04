@@ -50,6 +50,9 @@ importers:
       vinxi:
         specifier: 0.5.3
         version: 0.5.3(@types/node@22.15.3)(db0@0.3.2(drizzle-orm@0.43.1(@neondatabase/serverless@1.0.0)(@types/pg@8.11.14)))(drizzle-orm@0.43.1(@neondatabase/serverless@1.0.0)(@types/pg@8.11.14))(ioredis@5.6.1)(jiti@2.4.2)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+      zod:
+        specifier: ^3.24.3
+        version: 3.24.3
     devDependencies:
       '@types/node':
         specifier: ^22.5.4

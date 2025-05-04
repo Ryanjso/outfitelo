@@ -1,11 +1,11 @@
 import { timestamp, integer, text, pgTable } from "drizzle-orm/pg-core";
 
+// This db is for a project that compares meta gala outfits using ELO ratings
+
 const timestamps = {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 };
-
-// create table to represent yearly meta gala event
 
 export const galaEvent = pgTable("gala_event", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -14,8 +14,6 @@ export const galaEvent = pgTable("gala_event", {
   description: text("description"),
   ...timestamps,
 });
-
-// This db is for a project that compares meta gala outfits using ELO ratings
 
 export const outfit = pgTable("outfit", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
