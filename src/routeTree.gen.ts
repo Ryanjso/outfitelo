@@ -13,6 +13,9 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as RankingsImport } from './routes/rankings'
 import { Route as IndexImport } from './routes/index'
+import { Route as YearIndexImport } from './routes/$year/index'
+import { Route as YearRankingsImport } from './routes/$year/rankings'
+import { Route as YearLayoutImport } from './routes/$year/layout'
 
 // Create/Update Routes
 
@@ -25,6 +28,24 @@ const RankingsRoute = RankingsImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const YearIndexRoute = YearIndexImport.update({
+  id: '/$year/',
+  path: '/$year/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const YearRankingsRoute = YearRankingsImport.update({
+  id: '/$year/rankings',
+  path: '/$year/rankings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const YearLayoutRoute = YearLayoutImport.update({
+  id: '/$year/layout',
+  path: '/$year/layout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,6 +67,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RankingsImport
       parentRoute: typeof rootRoute
     }
+    '/$year/layout': {
+      id: '/$year/layout'
+      path: '/$year/layout'
+      fullPath: '/$year/layout'
+      preLoaderRoute: typeof YearLayoutImport
+      parentRoute: typeof rootRoute
+    }
+    '/$year/rankings': {
+      id: '/$year/rankings'
+      path: '/$year/rankings'
+      fullPath: '/$year/rankings'
+      preLoaderRoute: typeof YearRankingsImport
+      parentRoute: typeof rootRoute
+    }
+    '/$year/': {
+      id: '/$year/'
+      path: '/$year'
+      fullPath: '/$year'
+      preLoaderRoute: typeof YearIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,36 +96,57 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/rankings': typeof RankingsRoute
+  '/$year/layout': typeof YearLayoutRoute
+  '/$year/rankings': typeof YearRankingsRoute
+  '/$year': typeof YearIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/rankings': typeof RankingsRoute
+  '/$year/layout': typeof YearLayoutRoute
+  '/$year/rankings': typeof YearRankingsRoute
+  '/$year': typeof YearIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/rankings': typeof RankingsRoute
+  '/$year/layout': typeof YearLayoutRoute
+  '/$year/rankings': typeof YearRankingsRoute
+  '/$year/': typeof YearIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/rankings'
+  fullPaths: '/' | '/rankings' | '/$year/layout' | '/$year/rankings' | '/$year'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/rankings'
-  id: '__root__' | '/' | '/rankings'
+  to: '/' | '/rankings' | '/$year/layout' | '/$year/rankings' | '/$year'
+  id:
+    | '__root__'
+    | '/'
+    | '/rankings'
+    | '/$year/layout'
+    | '/$year/rankings'
+    | '/$year/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   RankingsRoute: typeof RankingsRoute
+  YearLayoutRoute: typeof YearLayoutRoute
+  YearRankingsRoute: typeof YearRankingsRoute
+  YearIndexRoute: typeof YearIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RankingsRoute: RankingsRoute,
+  YearLayoutRoute: YearLayoutRoute,
+  YearRankingsRoute: YearRankingsRoute,
+  YearIndexRoute: YearIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +160,10 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/rankings"
+        "/rankings",
+        "/$year/layout",
+        "/$year/rankings",
+        "/$year/"
       ]
     },
     "/": {
@@ -105,6 +171,15 @@ export const routeTree = rootRoute
     },
     "/rankings": {
       "filePath": "rankings.tsx"
+    },
+    "/$year/layout": {
+      "filePath": "$year/layout.tsx"
+    },
+    "/$year/rankings": {
+      "filePath": "$year/rankings.tsx"
+    },
+    "/$year/": {
+      "filePath": "$year/index.tsx"
     }
   }
 }

@@ -22,6 +22,10 @@ export const galaEvent = pgTable("gala_event", {
   ...timestamps,
 });
 
+export const galaEventRelations = relations(galaEvent, ({ many }) => ({
+  outfits: many(outfit),
+}));
+
 export const outfit = pgTable("outfit", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   wearerName: text("wearer_name").notNull(),
@@ -30,6 +34,14 @@ export const outfit = pgTable("outfit", {
   imageUrl: text("image_url").notNull(),
   ...timestamps,
 });
+
+export const outfitRelations = relations(outfit, ({ many, one }) => ({
+  ratings: many(outfitRating),
+  galaEvent: one(galaEvent, {
+    fields: [outfit.galaEventId],
+    references: [galaEvent.id],
+  }),
+}));
 
 export const outfitRating = pgTable("outfit_rating", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
