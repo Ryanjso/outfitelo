@@ -61,7 +61,6 @@ export const Route = createRootRouteWithContext<{
       {
         src: "https://embed-cdn.gettyimages.com/widgets.js",
         async: true,
-        strategy: "lazyOnload",
       },
     ],
   }),
@@ -92,8 +91,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <TanStackRouterDevtools position="bottom-right" />
-        <ReactQueryDevtools buttonPosition="bottom-left" />
+        {/* <TanStackRouterDevtools position="bottom-right" /> */}
+        {/* <ReactQueryDevtools buttonPosition="bottom-left" /> */}
         <Scripts />
       </body>
     </html>
