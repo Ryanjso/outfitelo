@@ -52,6 +52,18 @@ export const Route = createRootRouteWithContext<{
       { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
       { rel: "icon", href: "/favicon.ico" },
     ],
+
+    //   <Script
+    //   src="https://embed-cdn.gettyimages.com/widgets.js"
+    //   strategy="lazyOnload"
+    // />
+    scripts: [
+      {
+        src: "https://embed-cdn.gettyimages.com/widgets.js",
+        async: true,
+        strategy: "lazyOnload",
+      },
+    ],
   }),
   errorComponent: (props) => {
     return (

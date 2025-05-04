@@ -1,4 +1,11 @@
-import { timestamp, integer, text, pgTable } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import {
+  timestamp,
+  integer,
+  text,
+  pgTable,
+  numeric,
+} from "drizzle-orm/pg-core";
 
 // This db is for a project that compares meta gala outfits using ELO ratings
 
@@ -30,9 +37,18 @@ export const outfitRating = pgTable("outfit_rating", {
     .references(() => outfit.id)
     .notNull()
     .unique(),
-  rating: integer("rating").notNull().default(1500),
+  rating: numeric("rating", { precision: 10, scale: 2 })
+    .notNull()
+    .default("1500"),
   ...timestamps,
 });
+
+export const outfitRatingRelations = relations(outfitRating, ({ one }) => ({
+  outfit: one(outfit, {
+    fields: [outfitRating.outfitId],
+    references: [outfit.id],
+  }),
+}));
 
 export const match = pgTable("match", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -48,9 +64,16 @@ export const match = pgTable("match", {
   loserId: integer("loser_id")
     .references(() => outfit.id)
     .notNull(),
-  rating1Before: integer("rating1_before").notNull(),
-  rating2Before: integer("rating2_before").notNull(),
-  rating1After: integer("rating1_after").notNull(),
-  rating2After: integer("rating2_after").notNull(),
+  rating1Before: numeric("rating1_before", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
+  rating2Before: numeric("rating2_before", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
+  rating1After: numeric("rating1_after", { precision: 10, scale: 2 }).notNull(),
+  rating2After: numeric("rating2_after", { precision: 10, scale: 2 }).notNull(),
+  // TODO add ip address for abuse prevention
   ...timestamps,
 });

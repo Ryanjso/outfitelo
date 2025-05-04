@@ -5,20 +5,35 @@ import { z } from "zod";
 import { db } from "~/db";
 import { calculateElo } from "./elo";
 import { match, outfitRating } from "~/db/schema";
+import { queryOptions } from "@tanstack/react-query";
 
-export const getPair = createServerFn().handler(async () => {
-  const pair = await db.query.outfit.findMany({
-    orderBy: sql`RANDOM()`,
-    limit: 2,
+const getPair = createServerFn({ method: "GET" })
+  .validator(
+    z.object({
+      galaEventId: z.number(),
+    })
+  )
+  .handler(async ({ data }) => {
+    const { galaEventId } = data;
+    const pair = await db.query.outfit.findMany({
+      where: (outfit, { eq }) => eq(outfit.galaEventId, galaEventId),
+      orderBy: sql`RANDOM()`,
+      limit: 2,
+    });
+
+    // ensures tuple and typesafety
+    if (pair[0] && pair[1]) {
+      return [pair[0], pair[1]];
+    } else {
+      throw new Error("No pair found");
+    }
   });
 
-  // ensures tuple and typesafety
-  if (pair[0] && pair[1]) {
-    return [pair[0], pair[1]];
-  } else {
-    throw new Error("No pair found");
-  }
-});
+export const getPairQueryOptions = (galaEventId: number) =>
+  queryOptions({
+    queryKey: ["getPair", galaEventId],
+    queryFn: () => getPair({ data: { galaEventId } }),
+  });
 
 export const vote = createServerFn()
   .validator(
@@ -49,7 +64,10 @@ export const vote = createServerFn()
           );
         }
 
-        const { RaPrime, RbPrime } = calculateElo(winner.rating, loser.rating);
+        const { RaPrime, RbPrime } = calculateElo(
+          Number(winner.rating),
+          Number(loser.rating)
+        );
 
         const [matchRecord] = await tx
           .insert(match)
@@ -68,7 +86,7 @@ export const vote = createServerFn()
         const [updatedWinner] = await tx
           .update(outfitRating)
           .set({
-            rating: RaPrime,
+            rating: RaPrime.toString(),
           })
           .where(eq(outfitRating.outfitId, winnerOutfitId))
           .returning();
@@ -76,19 +94,40 @@ export const vote = createServerFn()
         const [updatedLoser] = await tx
           .update(outfitRating)
           .set({
-            rating: RbPrime,
+            rating: RbPrime.toString(),
           })
           .where(eq(outfitRating.outfitId, loserOutfitId))
           .returning();
 
-        return { matchRecord, updatedWinner, updatedLoser };
+        return {
+          matchRecord,
+          updatedWinner,
+          updatedLoser,
+          prevWinner: winner,
+          prevLoser: loser,
+        };
       });
 
-      const { matchRecord, updatedWinner, updatedLoser } = result;
+      const {
+        matchRecord,
+        updatedWinner,
+        updatedLoser,
+        prevWinner,
+        prevLoser,
+      } = result;
 
       return {
         matchRecord,
-        newRatings: { winner: updatedWinner, loser: updatedLoser },
+        newRatings: {
+          winner: {
+            ...updatedWinner,
+            eloChange: Number(updatedWinner.rating) - Number(prevWinner.rating),
+          },
+          loser: {
+            ...updatedLoser,
+            eloChange: Number(updatedLoser.rating) - Number(prevLoser.rating),
+          },
+        },
       };
     } catch (error) {
       console.error(error);
