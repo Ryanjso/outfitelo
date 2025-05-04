@@ -6,7 +6,7 @@ import { db } from "~/db";
 import { calculateElo } from "./elo";
 import { match, outfitRating } from "~/db/schema";
 import { queryOptions } from "@tanstack/react-query";
-
+import { notFound } from "@tanstack/react-router";
 const getPair = createServerFn({ method: "GET" })
   .validator(
     z.object({
@@ -25,7 +25,7 @@ const getPair = createServerFn({ method: "GET" })
     if (pair[0] && pair[1]) {
       return [pair[0], pair[1]];
     } else {
-      throw new Error("No pair found");
+      throw notFound();
     }
   });
 
