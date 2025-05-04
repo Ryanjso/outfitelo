@@ -6,7 +6,9 @@
   "homepage": "https://outfitelo.com",
   "scripts": {
     "dev": "vinxi dev",
-    "build": "vinxi build",
+    "build": "timeout 5m pnpm run db:migrate && vinxi build",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
     "start": "vinxi start"
   },
   "dependencies": {
